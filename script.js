@@ -1,33 +1,51 @@
-//your JS code here. If required.
-let saveInput = document.querySelector('input[type="submit"]')
-saveInput.addEventListener("click",()=>{
-	let fontSize = document.querySelector('#fontsize').value
-	let fontColor = document.querySelector('input[type="color"]').value
-	// console.log(fontSize,fontColor)
-	document.cookie = "fontcolor="+fontColor+"; expires= Fri, 25 June 2023 12:00:00 UTC; path=/";
-	document.cookie = "fontsize="+fontSize+"; expires= Fri, 25 June 2023 12:00:00 UTC; path=/";
-}) 
+document.addEventListener('DOMContentLoaded', () => {
+    const settingsForm = document.getElementById('settingsForm');
+    const fontsizeInput = document.getElementById('fontsize');
+    const fontcolorInput = document.getElementById('fontcolor');
 
-function showCookieValue(){
-let fontSizeCookie = getCookie("fontsize")
-	if(fontSizeCookie){
-		document.querySelector('#fontsize').value = fontSizeCookie 
-	}
-	let fontColorCookie =getCookie("fontcolor")
-	if(fontColorCookie){
-		document.querySelector('input[type="color"]').value = fontColorCookie 
-	}
+    // Load preferences from cookies if they exist
+    const savedFontSize = getCookie('fontsize');
+    const savedFontColor = getCookie('fontcolor');
 
-	
-}
+    if (savedFontSize) {
+        document.documentElement.style.setProperty('--fontsize', `${savedFontSize}px`);
+        fontsizeInput.value = savedFontSize;
+    }
 
-function getCookie(key){
-	let cookies =  document.cookie.split("; ")
-	 .find((row) => row.startsWith(key))
-	if(cookies){
-		return cookies.split("=")[1]
-	}else{
-		return undefined
-	}
-	
-}
+    if (savedFontColor) {
+        document.documentElement.style.setProperty('--fontcolor', savedFontColor);
+        fontcolorInput.value = savedFontColor;
+    }
+
+    // Save preferences to cookies on form submission
+    settingsForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const fontsize = fontsizeInput.value;
+        const fontcolor = fontcolorInput.value;
+
+        setCookie('fontsize', fontsize, 365);
+        setCookie('fontcolor', fontcolor, 365);
+
+        document.documentElement.style.setProperty('--fontsize', `${fontsize}px`);
+        document.documentElement.style.setProperty('--fontcolor', fontcolor);
+    });
+
+    function setCookie(name, value, days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        const expires = "expires=" + date.toUTCString();
+        document.cookie = `${name}=${value}; ${expires}; path=/`;
+    }
+
+    function getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+});
