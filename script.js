@@ -1,34 +1,33 @@
 //your JS code here. If required.
-const fontSizeInput = document.getElementById("fontsize");
-const fontColorInput = document.getElementById("fontcolor");
-const saveButton = document.querySelector("input[type='submit']");
+let saveInput = document.querySelector('input[type="submit"]')
+saveInput.addEventListener("click",()=>{
+	let fontSize = document.querySelector('#fontsize').value
+	let fontColor = document.querySelector('input[type="color"]').value
+	// console.log(fontSize,fontColor)
+	document.cookie = "fontcolor="+fontColor+"; expires= Fri, 25 June 2023 12:00:00 UTC; path=/";
+	document.cookie = "fontsize="+fontSize+"; expires= Fri, 25 June 2023 12:00:00 UTC; path=/";
+}) 
 
-// Load saved preferences from cookies
-if (document.cookie) {
-  const preferences = document.cookie.split(";").reduce((acc, cookie) => {
-    const [key, value] = cookie.split("=");
-    acc[key.trim()] = value.trim();
-    return acc;
-  }, {});
+function showCookieValue(){
+let fontSizeCookie = getCookie("fontsize")
+	if(fontSizeCookie){
+		document.querySelector('#fontsize').value = fontSizeCookie 
+	}
+	let fontColorCookie =getCookie("fontcolor")
+	if(fontColorCookie){
+		document.querySelector('input[type="color"]').value = fontColorCookie 
+	}
 
-  if (preferences.fontSize) {
-    fontSizeInput.value = preferences.fontSize;
-    document.documentElement.style.setProperty("--fontsize", preferences.fontSize + "px");
-  }
-
-  if (preferences.fontColor) {
-    fontColorInput.value = preferences.fontColor;
-    document.documentElement.style.setProperty("--fontcolor", preferences.fontColor);
-  }
+	
 }
 
-// Save preferences to cookies on form submit
-saveButton.addEventListener("click", (event) => {
-  event.preventDefault();
-  const fontSize = fontSizeInput.value;
-  const fontColor = fontColorInput.value;
-  document.documentElement.style.setProperty("--fontsize", fontSize + "px");
-  document.documentElement.style.setProperty("--fontcolor", fontColor);
-  document.cookie = `fontSize=${fontSize}; expires=${new Date(Date.now() + 86400000).toUTCString()}`;
-  document.cookie = `fontColor=${fontColor}; expires=${new Date(Date.now() + 86400000).toUTCString()}`;
-});
+function getCookie(key){
+	let cookies =  document.cookie.split("; ")
+	 .find((row) => row.startsWith(key))
+	if(cookies){
+		return cookies.split("=")[1]
+	}else{
+		return undefined
+	}
+	
+}
